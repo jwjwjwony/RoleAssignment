@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏫 우리 반 1인 1역할 배정판</title>
+  
+  <!-- 구글 웹폰트 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@500;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      /* 파스텔 옐로우 & 민트 테마 색상 팔레트 */
+      --mint-primary: #10B981;
+      --mint-dark: #059669;
+      --mint-light: #ECFDF5;
+      --mint-soft: #D1FAE5;
+      --mint-border: #A7F3D0;
+
+      --yellow-primary: #F59E0B;
+      --yellow-dark: #D97706;
+      --yellow-light: #FFFBEB;
+      --yellow-soft: #FEF3C7;
+      --yellow-bright: #FBBF24;
+
+      --bg-cream: #FAFDFB;
+      --card-bg: #FFFFFF;
+      --text-main: #1F2937;
+      --text-muted: #4B5563;
+      --border-color: #E2ECE9;
+      --card-shadow: 0 10px 22px rgba(16, 185, 129, 0.08);
+
+      --font-jua: 'Jua', sans-serif;
+      --font-sans: 'Noto Sans KR', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-cream);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 16px 60px 16px;
+      background-image: radial-gradient(#D5EFEA 1.6px, transparent 1.6px);
+      background-size: 26px 26px;
+      overflow-x: hidden;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    /* 상단 헤더 */
+    header {
+      text-align: center;
+      padding: 10px 0;
+    }
+
+    header h1 {
+      font-family: var(--font-jua);
+      font-size: clamp(2.3rem, 4.2vw, 3.5rem);
+      color: var(--text-main);
+      text-shadow: 3px 3px 0px var(--yellow-bright);
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    header p {
+      font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* 좌우 입력창 레이아웃 */
+    .inputs-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .inputs-wrapper {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .input-box {
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+    }
+
+    .input-box.mint-box {
+      border-top: 6px solid var(--mint-primary);
+    }
+
+    .input-box.yellow-box {
+      border-top: 6px solid var(--yellow-bright);
+    }
+
+    .input-box-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .input-box-header h2 {
+      font-family: var(--font-jua);
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .count-badge {
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 4px 14px;
+      border-radius: 20px;
+    }
+
+    .count-badge.mint {
+      background: var(--mint-soft);
+      color: var(--mint-dark);
+    }
+
+    .count-badge.yellow {
+      background: var(--yellow-soft);
+      color: var(--yellow-dark);
+    }
+
+    textarea {
+      width: 100%;
+      height: 165px;
+      border: 2px dashed #CDE6E0;
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      font-family: var(--font-sans);
+      color: var(--text-main);
+      resize: vertical;
+      outline: none;
+      background-color: #FAFCFB;
+      transition: all 0.2s ease;
+    }
+
+    textarea:focus {
+      border-color: var(--mint-primary);
+      background-color: #FFFFFF;
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+    }
+
+    /* 사전 고정 핀 영역 */
+    .pin-section {
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      border-left: 6px solid var(--yellow-bright);
+    }
+
+    .pin-header h3 {
+      font-family: var(--font-jua);
+      font-size: 1.4rem;
+      color: var(--yellow-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pin-header p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .pin-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .pin-select {
+      flex: 1;
+      min-width: 180px;
+      padding: 12px 14px;
+      border: 2px solid #D5EBE6;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: var(--font-sans);
+      background: #FFFFFF;
+      color: var(--text-main);
+      outline: none;
+    }
+
+    .pin-select:focus {
+      border-color: var(--mint-primary);
+    }
+
+    .btn-pin-add {
+      font-family: var(--font-jua);
+      background-color: var(--mint-primary);
+      color: #FFFFFF;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: background 0.2s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    .btn-pin-add:hover {
+      background-color: var(--mint-dark);
+      transform: translateY(-1px);
+    }
+
+    .pinned-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      min-height: 28px;
+    }
+
+    .pin-tag {
+      background: var(--yellow-light);
+      border: 1.5px solid var(--yellow-bright);
+      color: var(--yellow-dark);
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 6px rgba(245, 158, 11, 0.12);
+    }
+
+    .pin-tag button {
+      background: none;
+      border: none;
+      color: var(--yellow-dark);
+      font-weight: 900;
+      cursor: pointer;
+      font-size: 1.15rem;
+      line-height: 1;
+      padding: 0 2px;
+    }
+
+    .pin-tag button:hover {
+      color: #B45309;
+    }
+
+    /* 조작 버튼 영역 */
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin: 10px 0;
+    }
+
+    .btn-main {
+      font-family: var(--font-jua);
+      background: linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%);
+      color: #372A05;
+      border: none;
+      font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+      padding: 16px 40px;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(245, 158, 11, 0.35), 0 4px 0 #B45309;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-main:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(245, 158, 11, 0.4), 0 6px 0 #B45309;
+    }
+
+    .btn-main:active:not(:disabled) {
+      transform: translateY(3px);
+      box-shadow: 0 2px 6px rgba(245, 158, 11, 0.2), 0 1px 0 #B45309;
+    }
+
+    .btn-main:disabled {
+      opacity: 0.75;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-print {
+      font-family: var(--font-jua);
+      background: #FFFFFF;
+      color: var(--mint-dark);
+      border: 2px solid var(--mint-primary);
+      font-size: 1.15rem;
+      padding: 14px 26px;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.12);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-print:hover {
+      background: var(--mint-light);
+      transform: translateY(-2px);
+    }
+
+    /* 결과 섹션 */
+    #result-section {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+      padding: 0 6px;
+    }
+
+    .result-header h2 {
+      font-family: var(--font-jua);
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      color: var(--text-main);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 18px;
+    }
+
+    /* 카드 스타일 */
+    .card {
+      background: #FFFFFF;
+      border-radius: 18px;
+      border: 2px solid var(--border-color);
+      padding: 18px 20px;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s ease;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 8px;
+      background: linear-gradient(90deg, var(--mint-primary), var(--yellow-bright));
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-badge {
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 8px;
+    }
+
+    .badge-pinned {
+      background: var(--yellow-soft);
+      color: var(--yellow-dark);
+      border: 1px solid var(--yellow-bright);
+    }
+
+    .badge-random {
+      background: var(--mint-light);
+      color: var(--mint-dark);
+      border: 1px solid var(--mint-border);
+    }
+
+    .card-num {
+      font-family: var(--font-jua);
+      font-size: 1.1rem;
+      color: #9CA3AF;
+    }
+
+    .card-student {
+      font-size: 1.7rem;
+      font-weight: 900;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-role-box {
+      background-color: var(--yellow-light);
+      border: 1.5px solid var(--yellow-soft);
+      border-radius: 14px;
+      padding: 14px;
+      min-height: 74px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .card-role-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--yellow-dark);
+      margin-bottom: 2px;
+    }
+
+    .card-role-text {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #1F2937;
+      line-height: 1.35;
+      word-break: keep-all;
+    }
+
+    /* 슬롯머신 롤링 애니메이션 */
+    .slot-rolling .card-role-box {
+      background-color: var(--mint-light);
+      border: 2px dashed var(--mint-primary);
+      animation: slotPulse 0.12s infinite alternate;
+    }
+
+    .slot-rolling .card-role-text {
+      filter: blur(1.2px);
+      transform: scale(1.04);
+      color: var(--mint-dark);
+    }
+
+    @keyframes slotPulse {
+      0% { transform: translateY(-2px); }
+      100% { transform: translateY(2px); }
+    }
+
+    /* 최종 결과 카드 바운스 팝업 */
+    .slot-revealed {
+      animation: popBounce 0.45s ease forwards;
+    }
+
+    @keyframes popBounce {
+      0% { transform: scale(0.92); opacity: 0.8; }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* 흩날리는 음표 시각 효과 (Music Notes Animation) */
+    .music-note {
+      position: fixed;
+      top: -50px;
+      z-index: 99999;
+      pointer-events: none;
+      user-select: none;
+      animation: floatMusicNote linear forwards;
+      text-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    @keyframes floatMusicNote {
+      0% {
+        opacity: 0;
+        transform: translateY(0) translateX(0) rotate(0deg) scale(0.6);
+      }
+      15% {
+        opacity: 1;
+        transform: translateY(12vh) translateX(calc(var(--sway-x) * 0.25)) rotate(25deg) scale(1.15);
+      }
+      50% {
+        transform: translateY(52vh) translateX(calc(var(--sway-x) * 0.7)) rotate(-30deg) scale(1);
+      }
+      85% {
+        opacity: 0.95;
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(105vh) translateX(var(--sway-x)) rotate(70deg) scale(0.8);
+      }
+    }
+
+    /* 교실 A4 인쇄 전용 출력 스타일 */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 12mm;
+      }
+      body {
+        background: #FFFFFF !important;
+        background-image: none !important;
+        padding: 0 !important;
+        color: #000000 !important;
+      }
+      .inputs-wrapper, .pin-section, .controls, header p, .music-note {
+        display: none !important;
+      }
+      header {
+        padding: 0 0 10px 0 !important;
+      }
+      header h1 {
+        font-size: 2.1rem !important;
+        color: #000000 !important;
+        text-shadow: none !important;
+      }
+      #result-section {
+        display: block !important;
+        margin-top: 0 !important;
+      }
+      .result-header {
+        display: none !important;
+      }
+      .cards-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 8px !important;
+      }
+      .card {
+        break-inside: avoid;
+        box-shadow: none !important;
+        border: 1.5px solid #333333 !important;
+        padding: 10px 12px !important;
+      }
+      .card::before {
+        display: none !important;
+      }
+      .card-student {
+        font-size: 1.25rem !important;
+        color: #000000 !important;
+      }
+      .card-role-box {
+        background: #F9F9F9 !important;
+        border: 1px solid #CCC !important;
+        padding: 8px !important;
+        min-height: auto !important;
+      }
+      .card-role-title {
+        color: #555555 !important;
+        font-size: 0.75rem !important;
+      }
+      .card-role-text {
+        font-size: 1.05rem !important;
+        color: #000000 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- 헤더 -->
+    <header>
+      <h1>🏫 우리 반 1인 1역할 배정판</h1>
+      <p>즐겁고 공평하게 우리 학급의 1인 1역할을 정해보아요 🎶</p>
+    </header>
+
+    <!-- 입력창 영역 -->
+    <div class="inputs-wrapper">
+      <!-- 왼쪽: 학생 명단 (민트 박스) -->
+      <div class="input-box mint-box">
+        <div class="input-box-header">
+          <h2>🧑‍🤝‍🧑 학생 명단</h2>
+          <span class="count-badge mint" id="studentCount">10명</span>
+        </div>
+        <textarea id="studentsInput" placeholder="학생 이름을 줄바꿈(엔터)으로 입력하세요...">김민준
+이서연
+박도윤
+최서아
+정하준
+강지우
+조은우
+윤하은
+장시우
+임지유</textarea>
+      </div>
+
+      <!-- 오른쪽: 역할 목록 (옐로우 박스) -->
+      <div class="input-box yellow-box">
+        <div class="input-box-header">
+          <h2>📋 역할 목록</h2>
+          <span class="count-badge yellow" id="roleCount">10개</span>
+        </div>
+        <textarea id="rolesInput" placeholder="역할 목록을 줄바꿈(엔터)으로 입력하세요...">🧹 교실 바닥 쓸기
+🧽 칠판 및 분필 털이
+🥛 우유 급식 당번
+♻️ 분리수거 및 쓰레기통 비우기
+🪟 창문 열고 아침 환기
+💡 교실 전등 및 냉난방기 끄기
+📚 학급 문고 및 책꽂이 정리
+💻 전자칠판 및 컴퓨터 관리
+🌱 학급 화분 식물 물주기
+📋 학습지 배부 및 출석부 관리</textarea>
+      </div>
+    </div>
+
+    <!-- 사전 고정 핀 (Pin) 설정 영역 -->
+    <div class="pin-section">
+      <div class="pin-header">
+        <h3>📌 특정 학생·역할 사전 고정 핀</h3>
+        <p>미리 정해진 학생의 역할을 고정하세요. 고정된 학생을 제외한 나머지 학생들만 무작위로 배정됩니다.</p>
+      </div>
+      <div class="pin-controls">
+        <select id="pinStudentSelect" class="pin-select">
+          <option value="">학생을 선택하세요</option>
+        </select>
+        <span style="font-size: 1.25rem; font-weight: bold; color: var(--yellow-bright);">➔</span>
+        <select id="pinRoleSelect" class="pin-select">
+          <option value="">역할을 선택하세요</option>
+        </select>
+        <button id="addPinBtn" class="btn-pin-add">+ 고정 핀 꽂기 📌</button>
+      </div>
+      <div class="pinned-list" id="pinnedList">
+        <!-- 등록된 고정 핀 태그 목록 -->
+      </div>
+    </div>
+
+    <!-- 조작 버튼 영역 -->
+    <div class="controls">
+      <button class="btn-main" id="assignBtn">
+        <span id="btnIcon">🎲</span>
+        <span id="btnText">역할 랜덤 배정하기!</span>
+      </button>
+      <button class="btn-print" id="printBtn" onclick="window.print()">
+        🖨️ A4 출력하기
+      </button>
+    </div>
+
+    <!-- 배정 결과 카드 영역 -->
+    <section id="result-section">
+      <div class="result-header">
+        <h2>🎉 최종 배정 결과표</h2>
+      </div>
+      <div class="cards-grid" id="cardsGrid">
+        <!-- 슬롯 애니메이션 및 최종 카드가 동적 생성됩니다 -->
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const studentsInput = document.getElementById('studentsInput');
+    const rolesInput = document.getElementById('rolesInput');
+    const studentCount = document.getElementById('studentCount');
+    const roleCount = document.getElementById('roleCount');
+    const assignBtn = document.getElementById('assignBtn');
+    const btnText = document.getElementById('btnText');
+    const btnIcon = document.getElementById('btnIcon');
+    const resultSection = document.getElementById('result-section');
+    const cardsGrid = document.getElementById('cardsGrid');
+
+    const pinStudentSelect = document.getElementById('pinStudentSelect');
+    const pinRoleSelect = document.getElementById('pinRoleSelect');
+    const addPinBtn = document.getElementById('addPinBtn');
+    const pinnedList = document.getElementById('pinnedList');
+
+    // 고정 핀 저장 배열
+    let pinnedPairs = [];
+
+    // 줄바꿈 텍스트 파싱
+    function getLines(textarea) {
+      return textarea.value
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0);
+    }
+
+    // 피셔-예이츠 셔플 알고리즘
+    function shuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // 입력값 변경 시 인원수 갱신 및 고정 핀 셀렉트박스 동기화
+    function syncInputsAndSelects() {
+      const students = getLines(studentsInput);
+      const roles = getLines(rolesInput);
+
+      studentCount.textContent = `${students.length}명`;
+      roleCount.textContent = `${roles.length}개`;
+
+      // 텍스트 삭제로 존재하지 않게 된 핀 자동 정리
+      pinnedPairs = pinnedPairs.filter(p => students.includes(p.student) && roles.includes(p.role));
+      renderPinTags();
+
+      const pinnedStudents = pinnedPairs.map(p => p.student);
+      const pinnedRoles = pinnedPairs.map(p => p.role);
+
+      const curSelectedStudent = pinStudentSelect.value;
+      const curSelectedRole = pinRoleSelect.value;
+
+      // 학생 셀렉트 재구성
+      pinStudentSelect.innerHTML = '<option value="">학생을 선택하세요</option>';
+      students.forEach(student => {
+        if (!pinnedStudents.includes(student)) {
+          const opt = document.createElement('option');
+          opt.value = student;
+          opt.textContent = student;
+          pinStudentSelect.appendChild(opt);
+        }
+      });
+
+      // 역할 셀렉트 재구성
+      pinRoleSelect.innerHTML = '<option value="">역할을 선택하세요</option>';
+      roles.forEach(role => {
+        if (!pinnedRoles.includes(role)) {
+          const opt = document.createElement('option');
+          opt.value = role;
+          opt.textContent = role;
+          pinRoleSelect.appendChild(opt);
+        }
+      });
+
+      if (students.includes(curSelectedStudent)) pinStudentSelect.value = curSelectedStudent;
+      if (roles.includes(curSelectedRole)) pinRoleSelect.value = curSelectedRole;
+    }
+
+    // 고정 핀 태그 렌더링
+    function renderPinTags() {
+      pinnedList.innerHTML = '';
+      pinnedPairs.forEach((pair, idx) => {
+        const tag = document.createElement('span');
+        tag.className = 'pin-tag';
+        tag.innerHTML = `
+          📌 <b>${pair.student}</b> ➔ ${pair.role}
+          <button type="button" onclick="removePin(${idx})" title="고정 해제">&times;</button>
+        `;
+        pinnedList.appendChild(tag);
+      });
+    }
+
+    // 고정 핀 추가
+    addPinBtn.addEventListener('click', () => {
+      const student = pinStudentSelect.value;
+      const role = pinRoleSelect.value;
+
+      if (!student || !role) {
+        alert('고정할 학생과 역할을 모두 선택해 주세요!');
+        return;
+      }
+
+      pinnedPairs.push({ student, role });
+      syncInputsAndSelects();
+    });
+
+    // 고정 핀 삭제
+    window.removePin = function(index) {
+      pinnedPairs.splice(index, 1);
+      syncInputsAndSelects();
+    };
+
+    studentsInput.addEventListener('input', syncInputsAndSelects);
+    rolesInput.addEventListener('input', syncInputsAndSelects);
+
+    // 흩날리는 음표 시각 효과 연출 함수
+    function triggerMusicNotes() {
+      const musicSymbols = ['🎵', '🎶', '♩', '♪', '♫', '♬'];
+      // 파스텔 옐로우, 민트, 골드 및 산뜻한 파스텔 톤 색상군
+      const colors = ['#10B981', '#F59E0B', '#34D399', '#FBBF24', '#059669', '#F97316', '#6EE7B7'];
+      const totalNotes = 55;
+
+      for (let i = 0; i < totalNotes; i++) {
+        const note = document.createElement('div');
+        note.className = 'music-note';
+        note.textContent = musicSymbols[Math.floor(Math.random() * musicSymbols.length)];
+
+        // 무작위 좌표, 크기, 색상, 애니메이션 지연
+        const startX = Math.random() * window.innerWidth;
+        const fontSize = Math.floor(Math.random() * 26) + 22; // 22px ~ 48px
+        const duration = (Math.random() * 2.2 + 2.5).toFixed(2); // 2.5s ~ 4.7s
+        const delay = (Math.random() * 0.9).toFixed(2);
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const swayX = Math.floor((Math.random() - 0.5) * 260); // 좌우 흔들림 거리
+
+        note.style.left = `${startX}px`;
+        note.style.fontSize = `${fontSize}px`;
+        note.style.color = color;
+        note.style.animationDuration = `${duration}s`;
+        note.style.animationDelay = `${delay}s`;
+        note.style.setProperty('--sway-x', `${swayX}px`);
+
+        document.body.appendChild(note);
+
+        // 애니메이션 종료 후 DOM 제거
+        setTimeout(() => {
+          note.remove();
+        }, (parseFloat(duration) + parseFloat(delay)) * 1000);
+      }
+    }
+
+    // 역할 배정 실행 및 2초 슬롯머신 애니메이션
+    function startAssignment() {
+      const allStudents = getLines(studentsInput);
+      const allRoles = getLines(rolesInput);
+
+      if (allStudents.length === 0) {
+        alert('학생 명단을 최소 1명 이상 입력해 주세요!');
+        return;
+      }
+      if (allRoles.length === 0) {
+        alert('역할 목록을 최소 1개 이상 입력해 주세요!');
+        return;
+      }
+
+      // 1. 고정 대상 및 미고정 대상 분류
+      const pinnedStudentNames = pinnedPairs.map(p => p.student);
+      const pinnedRoleNames = pinnedPairs.map(p => p.role);
+
+      const unpinnedStudents = allStudents.filter(s => !pinnedStudentNames.includes(s));
+      const unpinnedRoles = allRoles.filter(r => !pinnedRoleNames.includes(r));
+
+      // 2. 미고정 인원과 역할 셔플
+      const shuffledStudents = shuffle(unpinnedStudents);
+      const shuffledRoles = shuffle(unpinnedRoles);
+
+      // 3. 최종 매칭 결과 구성
+      const finalMatches = [];
+
+      // 고정 인원 추가
+      pinnedPairs.forEach(pair => {
+        finalMatches.push({
+          student: pair.student,
+          role: pair.role,
+          isPinned: true
+        });
+      });
+
+      // 무작위 인원 매칭
+      shuffledStudents.forEach((student, i) => {
+        const role = shuffledRoles[i] || '🌟 자율 도우미 (선생님 보조)';
+        finalMatches.push({
+          student: student,
+          role: role,
+          isPinned: false
+        });
+      });
+
+      // 가나다순으로 깔끔하게 정렬
+      finalMatches.sort((a, b) => a.student.localeCompare(b.student, 'ko'));
+
+      // 4. 슬롯머신 롤링 카드 생성
+      cardsGrid.innerHTML = '';
+      const cardRoleElements = [];
+
+      finalMatches.forEach((match, index) => {
+        const card = document.createElement('div');
+        card.className = 'card slot-rolling';
+
+        const badgeHtml = match.isPinned 
+          ? `<span class="card-badge badge-pinned">📌 사전 고정</span>`
+          : `<span class="card-badge badge-random">🎲 랜덤 배정</span>`;
+
+        card.innerHTML = `
+          <div class="card-top">
+            ${badgeHtml}
+            <span class="card-num">#${index + 1}</span>
+          </div>
+          <div class="card-student">🧑 ${match.student}</div>
+          <div class="card-role-box">
+            <div class="card-role-title">담당 역할</div>
+            <div class="card-role-text" id="role-text-${index}">섞는 중...</div>
+          </div>
+        `;
+        cardsGrid.appendChild(card);
+        cardRoleElements.push(card.querySelector('.card-role-text'));
+      });
+
+      // 남는 역할이 있는 경우 잔여 역할 안내 카드 추가
+      if (shuffledRoles.length > shuffledStudents.length) {
+        const remainingRoles = shuffledRoles.slice(shuffledStudents.length);
+        const remainCard = document.createElement('div');
+        remainCard.className = 'card';
+        remainCard.style.border = '2px dashed var(--yellow-bright)';
+        remainCard.style.background = '#FFFDF5';
+        remainCard.innerHTML = `
+          <div class="card-top">
+            <span class="card-badge badge-pinned">📌 잔여 역할</span>
+            <span class="card-num">${remainingRoles.length}개</span>
+          </div>
+          <div class="card-student" style="font-size: 1.3rem; color: var(--yellow-dark);">남은 역할 목록</div>
+          <div class="card-role-box" style="background: var(--yellow-soft); border-color: var(--yellow-bright);">
+            <div class="card-role-text" style="font-size: 1.05rem; font-weight: normal; color: var(--text-main);">
+              ${remainingRoles.join(', ')}
+            </div>
+          </div>
+        `;
+        cardsGrid.appendChild(remainCard);
+      }
+
+      resultSection.style.display = 'block';
+      resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // 5. 2초 동안 슬롯머신 회전 연출
+      assignBtn.disabled = true;
+      btnIcon.textContent = '🥁';
+      btnText.textContent = '두구두구... 배정 중!';
+
+      const totalPool = allRoles;
+      const intervalTimer = setInterval(() => {
+        cardRoleElements.forEach(el => {
+          const randomRole = totalPool[Math.floor(Math.random() * totalPool.length)];
+          el.textContent = randomRole;
+        });
+      }, 70);
+
+      // 2초(2000ms) 후 최종 결과 확정 및 음표 효과 실행
+      setTimeout(() => {
+        clearInterval(intervalTimer);
+
+        // 확정된 역할 텍스트 주입
+        finalMatches.forEach((match, i) => {
+          cardRoleElements[i].textContent = match.role;
+        });
+
+        // 애니메이션 상태 전환
+        const allCards = cardsGrid.querySelectorAll('.card');
+        allCards.forEach(card => {
+          card.classList.remove('slot-rolling');
+          card.classList.add('slot-revealed');
+        });
+
+        // 🎵 음표 흩날리기 시각 효과 발동!
+        triggerMusicNotes();
+
+        // 버튼 상태 원복
+        assignBtn.disabled = false;
+        btnIcon.textContent = '🎲';
+        btnText.textContent = '역할 다시 배정하기!';
+      }, 2000);
+    }
+
+    assignBtn.addEventListener('click', startAssignment);
+
+    // 초기 동기화 실행
+    syncInputsAndSelects();
+  </script>
+</body>
+</html>
